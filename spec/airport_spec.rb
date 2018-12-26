@@ -1,7 +1,7 @@
 require 'airport'
 
 RSpec.describe Airport do
-  subject(:airport) { described_class.new(20, weather) }
+  subject(:airport) { described_class.new(weather, 20) }
   let(:plane) { double :plane }
   let(:weather) { double :weather }
 
@@ -44,7 +44,7 @@ RSpec.describe Airport do
       end
 
       it 'raises an error if plane is not at this airport' do
-        gatwick = described_class.new(20, weather)
+        gatwick = described_class.new(weather, 20)
         gatwick.land(plane)
         expect{ airport.take_off(plane) }.to raise_error 'Cannot take off plane: plane not at this airport.'
       end
@@ -58,6 +58,16 @@ RSpec.describe Airport do
       it 'raises an error' do
         expect{ airport.take_off(plane) }.to raise_error 'Cannot take off plane: weather is stormy.'
       end
+    end
+  end
+
+  context 'defaults' do
+    subject(:default_airport) { described_class.new(weather) }
+
+    it 'has a default capacity' do
+      allow(weather).to receive(:stormy?).and_return false
+      described_class::DEFAULT_CAPACITY.times { default_airport.land(plane) }
+      expect{ default_airport.land(plane) }.to raise_error 'Cannot land plane: airport full.'
     end
   end
 end
