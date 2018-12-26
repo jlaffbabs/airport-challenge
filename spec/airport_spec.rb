@@ -1,13 +1,14 @@
 require 'airport'
 
 RSpec.describe Airport do
-  subject(:airport) { described_class.new(20) }
+  subject(:airport) { described_class.new(20, weather) }
   let(:plane) { double :plane }
+  let(:weather) { double :weather }
 
   describe '#land' do
     context 'when not stormy' do
       before do
-        allow(airport).to receive(:stormy?).and_return false
+        allow(weather).to receive(:stormy?).and_return false
       end
 
       it 'instructs a plane to land' do
@@ -26,7 +27,7 @@ RSpec.describe Airport do
 
     context 'when stormy' do
       it 'raises an error' do
-        allow(airport).to receive(:stormy?).and_return true
+        allow(weather).to receive(:stormy?).and_return true
         expect{ airport.land(plane) }.to raise_error 'Cannot land plane: weather is stormy.'
       end
     end
@@ -43,7 +44,7 @@ RSpec.describe Airport do
       before do
         allow(airport).to receive(:stormy?).and_return true
       end
-      
+
       it 'raises an error' do
         expect{ airport.take_off(plane) }.to raise_error 'Cannot take off plane: weather is stormy.'
       end
