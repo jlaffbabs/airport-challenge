@@ -2,7 +2,7 @@ require 'airport'
 
 RSpec.describe Airport do
   subject(:airport) { described_class.new(weather, 20) }
-  let(:plane) { double :plane }
+  let(:plane) { double :plane, land: nil, take_off: nil }
   let(:weather) { double :weather }
 
   describe '#land' do
@@ -12,7 +12,8 @@ RSpec.describe Airport do
       end
 
       it 'instructs a plane to land' do
-        expect(airport).to respond_to(:land).with(1).argument
+        expect(plane).to receive(:land)
+        airport.land(plane)
       end
 
       context 'when full' do
@@ -40,7 +41,14 @@ RSpec.describe Airport do
       end
 
       it 'instructs a plane to take off' do
-        expect(airport).to respond_to(:take_off).with(1).argument
+        airport.land(plane)
+        expect(plane).to receive(:take_off)
+        airport.take_off(plane)
+      end
+
+      it 'returns the plane that took off' do
+        airport.land(plane)
+        expect(airport.take_off(plane)).to eq plane
       end
 
       it 'raises an error if plane is not at this airport' do
